@@ -33,12 +33,7 @@ typedef struct Mesh
     bgfx::VertexBufferHandle getVBH ()
     {
         bgfx::VertexLayout vertexLayout;
-        vertexLayout.begin();
-        vertexLayout.add(bgfx::Attrib::Position,
-                          3, bgfx::AttribType::Float);
-        vertexLayout.add(bgfx::Attrib::Color0, 4,
-                          bgfx::AttribType::Uint8, true);
-        vertexLayout.end();
+        Vertex::getVertexLayout(&vertexLayout);
         return bgfx::createVertexBuffer(bgfx::makeRef(this->vertices.data(), vertices.size() * sizeof(Vertex)), vertexLayout);
     }
 

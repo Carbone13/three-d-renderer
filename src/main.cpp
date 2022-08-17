@@ -17,7 +17,7 @@
 
 #include "shader/shader.h"
 #include "mesh/surface.h"
-#include "camera/Camera.h"
+#include "camera/camera.h"
 
 #define WIDTH 1600
 #define HEIGHT 900
