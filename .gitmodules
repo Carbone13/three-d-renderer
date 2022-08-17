@@ -10,3 +10,6 @@
 [submodule "lib/bgfx"]
 	path = lib/bgfx
 	url = https://github.com/bkaradzic/bgfx.git
+[submodule "lib/bin2c"]
+	path = lib/bin2c
+	url = https://github.com/gwilymk/bin2c
