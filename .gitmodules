@@ -13,3 +13,6 @@
 [submodule "lib/bin2c"]
 	path = lib/bin2c
 	url = https://github.com/gwilymk/bin2c
+[submodule "lib/glm"]
+	path = lib/glm
+	url = https://github.com/g-truc/glm

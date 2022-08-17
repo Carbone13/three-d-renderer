@@ -1,46 +1,59 @@
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <iostream>
-#include <main.h>
 
+
+#include <main.h>
+#include <iostream>
+
+#define GLFW_EXPOSE_NATIVE_WIN32
 #include "GLFW/glfw3.h"
 #include "GLFW/glfw3native.h"
+
+#define GLM_FORCE_RADIANS
+#include "glm/glm.hpp"
+#include "glm/ext.hpp"
+
+
 #include "bgfx/bgfx.h"
+#include "bgfx/platform.h"
+
 #include "shader/shader.h"
 #include "mesh/surface.h"
-#include "pipeline/renderer.h"
+#include "camera/Camera.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
 
-
 GLFWwindow* window;
-GLFWmonitor* monitor;
+Camera camera;
 
 Shader mainShader;
-
 Mesh demoMesh;
 
-bx::Vec3 cameraPos(0, 0, -10);
-bx::Vec3 up(0, 1, 0);
-bx::Vec3 forward(0, 0, 1);
-bx::Vec3 right (1, 0, 0);
-float cameraPitch {0};
-float cameraYaw {0};
+double mouseX, mouseY;
 
-Renderer renderer;
-
-int speed = 15;
-float sensitivity = 0.1f;
+static void debugGlfwError (int err, const char *msg)
+{
+    std::cerr << "GLFW ERROR (" << err << "): " << msg << std::endl;
+}
 
 int main()
 {
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwSetErrorCallback(debugGlfwError);
 
-    glfwInit();
+    if (!glfwInit()) {
+        std::cerr << "Error initializing GLFW" << std::endl;
+        return -1;
+    }
 
     window = glfwCreateWindow(WIDTH, HEIGHT, "3D Renderer", nullptr, nullptr);
-    monitor = glfwGetPrimaryMonitor();
+
+    if (!window) {
+        std::cerr << "Error creating window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (glfwRawMouseMotionSupported())
@@ -54,15 +67,17 @@ int main()
     bgfxInit.resolution.height = HEIGHT;
     bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
     bgfxInit.platformData = pd;
-
     bgfx::init(bgfxInit);
 
+    bgfx::reset(WIDTH, HEIGHT, BGFX_RESET_VSYNC, bgfxInit.resolution.format);
     bgfx::setDebug(BGFX_DEBUG_TEXT);
-
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x31a9b4FF, 1.0f, 0);
-    bgfx::setViewRect(0, 0, 0, WIDTH, HEIGHT);
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x003030FF, 1.0f, 0);
+    bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
     load();
+
+    camera.setPosition(glm::vec3{0.0, 0.0, -7.0});
+    //camera.set_rotation(glm::vec2{60.0, -120.0});
 
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window))
@@ -74,6 +89,7 @@ int main()
 
         update(static_cast<float>(dt));
 
+        bgfx::touch(0);
         bgfx::dbgTextClear();
         render();
         bgfx::frame();
@@ -93,18 +109,16 @@ void input ()
     }
 }
 
-double mouseX, mouseY;
-
 void render ()
 {
-    //bgfx::dbgTextPrintf(0, 0, ((0x2) << 4) | 0xF, std::to_string(glfwGetTime()).c_str());
-    bx::Quaternion rot = bx::fromEuler(bx::Vec3{cameraPitch, cameraYaw, 0});
-    bx::Vec3 at = bx::add(cameraPos, bx::mul(forward, rot));
+    bgfx::dbgTextPrintf(0, 0, ((0x2 + 1) << 4) | 0xF, "Hello, world");
+    bgfx::dbgTextPrintf(0, 1, ((0x2) << 4) | 0xF, std::to_string(glfwGetTime()).c_str());
 
-    renderer.setViewMatrix(cameraPos, at, bx::mul(up, rot));
-    renderer.setProjectionMatrix(60, 1, 0.01f, 1000.0f);
-    renderer.setViewport(0, 0, WIDTH, HEIGHT);
-    renderer.prepare();
+    camera.prepare();
+    bgfx::setViewRect(0, 0, 0, WIDTH, HEIGHT);
+
+    glm::mat4 model = glm::translate(glm::mat4(1.0), glm::vec3(0, 0, 0));
+    bgfx::setTransform(reinterpret_cast<void *>(&model));
 
     bgfx::setVertexBuffer(0, demoMesh.getVBH());
     bgfx::setIndexBuffer(demoMesh.getIBH());
@@ -114,32 +128,18 @@ void render ()
 
 void update (float delta)
 {
-    bx::Quaternion rot = bx::fromEuler(bx::Vec3{cameraPitch, cameraYaw, 0});
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        cameraPos = bx::add(cameraPos, bx::mul(bx::mul(forward, rot), delta * speed));
-    }
+        camera.setPosition(camera.getPosition() + camera.getForward() * 10.0f * delta);
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        cameraPos = bx::sub(cameraPos, bx::mul(bx::mul(forward, rot), delta * speed));
-    }
+        camera.setPosition(camera.getPosition() - camera.getForward() * 10.0f * delta);
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        cameraPos = bx::sub(cameraPos, bx::mul(bx::mul(right, rot), delta * speed));
-    }
+        camera.setPosition(camera.getPosition() + camera.getRight() * 10.0f * delta);
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        cameraPos = bx::add(cameraPos, bx::mul(bx::mul(right, rot), delta * speed));
-    }
-    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-        cameraPos = bx::add(cameraPos, bx::mul(bx::mul(up, rot), delta * speed));
-    }
+        camera.setPosition(camera.getPosition() - camera.getRight() * 10.0f * delta);
     if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-    {
-        cameraPos = bx::sub(cameraPos, bx::mul(bx::mul(up, rot), delta * speed));
-    }
-
+        camera.setPosition(camera.getPosition() + camera.getUp() * 10.0f * delta);
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera.setPosition(camera.getPosition() - camera.getUp() * 10.0f * delta);
 
     float oldXPos = (float)mouseX, oldYPos = (float)mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -147,14 +147,7 @@ void update (float delta)
     xDelta = (float)mouseX - oldXPos;
     yDelta = (float)mouseY - oldYPos;
 
-
-    cameraYaw -= sensitivity * xDelta * delta;
-    //if (cameraYaw > 360) cameraYaw -= 360;
-    //if (cameraYaw < 0) cameraYaw += 360;
-
-    cameraPitch -= sensitivity * yDelta * delta;
-    //if (cameraPitch > 360) cameraPitch -= 360;
-    //if (cameraPitch < 0) cameraPitch += 360;
+    camera.setRotation(camera.getRotation() + glm::vec2{0.1f * xDelta * delta, 0.1f * yDelta * delta});
 }
 
 
