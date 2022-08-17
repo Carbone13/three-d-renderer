@@ -21,11 +21,11 @@ private:
 
 public:
     // GETTERS
-    glm::vec3 getPosition() const { return position; }
-    glm::vec2 getRotation () const { return rotation; }
-    glm::vec3 getForward () const { return forward; }
-    glm::vec3 getRight () const { return right; }
-    glm::vec3 getUp () const { return up; }
+    [[nodiscard]] glm::vec3 getPosition() const { return position; }
+    [[nodiscard]] glm::vec2 getRotation () const { return rotation; }
+    [[nodiscard]] glm::vec3 getForward () const { return forward; }
+    [[nodiscard]] glm::vec3 getRight () const { return right; }
+    [[nodiscard]] glm::vec3 getUp () const { return up; }
 
     // SETTERS
     void setPosition (glm::vec3 _position);

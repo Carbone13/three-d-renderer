@@ -19,8 +19,8 @@
 #include "mesh/surface.h"
 #include "camera/Camera.h"
 
-#define WIDTH 1280
-#define HEIGHT 720
+#define WIDTH 100
+#define HEIGHT 900
 
 GLFWwindow* window;
 Camera camera;
