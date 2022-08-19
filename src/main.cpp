@@ -13,6 +13,8 @@
 #include "camera/camera.hpp"
 #include "render/renderer/renderer.hpp"
 
+#include "mesh/bunny.hpp"
+
 #define WIDTH 1600
 #define HEIGHT 900
 
@@ -23,6 +25,7 @@ Camera camera {};
 
 Mesh demoMesh;
 Mesh demoMesh2;
+Mesh bunny;
 
 double mouseX, mouseY;
 
@@ -91,6 +94,7 @@ void render ()
 
     renderer.render(demoMesh);
     renderer.render(demoMesh2);
+    renderer.render(bunny);
 
     renderer.present();
 }
@@ -177,5 +181,11 @@ void load ()
             6, 7, 3,
     };
 
-    demoMesh2.modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(5, 0, 0));
+    demoMesh2.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5, 0, 0));
+
+    bunny.vertices = s_bunnyVertices;
+    bunny.vertexIndices = s_bunnyTriList;
+
+    glm::mat4 model =  glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+    bunny.modelMatrix = glm::scale(model, glm::vec3(0.05f));
 }

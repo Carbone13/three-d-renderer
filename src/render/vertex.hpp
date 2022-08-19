@@ -9,7 +9,7 @@ typedef uint32_t ABGRColor_t;
 struct Vertex
 {
     float x, y, z;
-    ABGRColor_t color;
+    ABGRColor_t color {0xFFFFFFFF};
 
     inline static void getVertexLayout (bgfx::VertexLayout* vertexLayout)
     {

@@ -85,8 +85,6 @@ void Batcher::flush()
         if (batch.second.vertexBuffer.elementCount == 0)
             continue;
 
-        std::cout << batch.second.commands.size() << std::endl;
-
         while (!batch.second.commands.empty()) {
             BatchCommand cmd = batch.second.commands.front();
             BatchCommand nextCmd{};
@@ -116,7 +114,6 @@ void Batcher::flush()
             // We can no longer batch the command. Send to GPU
             if (!canBatchCmd)
             {
-                std::cout << "blitting" << std::endl;
                 bgfx::VertexBufferHandle vbh = bgfx::createVertexBuffer(bgfx::makeRef(batch.second.vertexBuffer.content.data() + vertexStart, sizeof(Vertex) * vertexCount), *vertexLayout);
                 bgfx::IndexBufferHandle  ibh = bgfx::createIndexBuffer( bgfx::makeRef(batch.second.indexBuffer.content.data() + indiciesStart,  sizeof(uint16_t) * indiciesCount ));
 
