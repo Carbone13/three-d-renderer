@@ -2,20 +2,18 @@
 
 void Camera::setPosition(glm::vec3 _position)
 {
+    oldPosition = position;
     position = _position;
-    recalculate();
 }
 
 void Camera::setRotation(glm::vec2 _rotation)
 {
+    oldRotation = rotation;
     rotation = _rotation;
-    recalculate();
 }
 
 void Camera::recalculate()
 {
-    proj = glm::perspective(glm::pi<float>() * 0.5f, 16.0f / 9.0f, 0.1f, 100.0f);
-
     view = glm::rotate(glm::mat4(1.0f), rotation.y, glm::vec3(1.0f, 0.0f, 0.0f));
     view = glm::rotate(view, rotation.x, glm::vec3(0.0f, 1.0f, 0.0f));
     view = glm::translate(view, position);
@@ -25,8 +23,16 @@ void Camera::recalculate()
     forward = glm::vec3 { view[0][2], view[1][2], view[2][2] };
 }
 
-void Camera::prepare() {
+void Camera::prepare()
+{
+    if(oldPosition != position || oldRotation != rotation)
+    {
+        recalculate();
+    }
+
     bgfx::setViewTransform(0,
             reinterpret_cast<void *>(&view),
             reinterpret_cast<void *>(&proj));
 }
+
+

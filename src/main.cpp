@@ -1,5 +1,3 @@
-
-
 #include <main.h>
 #include <iostream>
 
@@ -9,51 +7,30 @@
 
 #define GLM_FORCE_RADIANS
 #include "glm/glm.hpp"
-#include "glm/ext.hpp"
-
 
 #include "bgfx/bgfx.h"
-#include "bgfx/platform.h"
 
-#include "shader/shader.h"
-#include "mesh/surface.h"
 #include "camera/camera.h"
+#include "render/renderer/renderer.h"
 
 #define WIDTH 1600
 #define HEIGHT 900
 
 GLFWwindow* window;
-Camera camera;
 
-Shader mainShader;
+Renderer renderer;
+Camera camera {};
+
 Mesh demoMesh;
+Mesh demoMesh2;
 
 double mouseX, mouseY;
 
-static void debugGlfwError (int err, const char *msg)
-{
-    std::cerr << "GLFW ERROR (" << err << "): " << msg << std::endl;
-}
-
 int main()
 {
-    glfwSetErrorCallback(debugGlfwError);
-
-    if (!glfwInit()) {
-        std::cerr << "Error initializing GLFW" << std::endl;
-        return -1;
-    }
+    glfwInit();
 
     window = glfwCreateWindow(WIDTH, HEIGHT, "3D Renderer", nullptr, nullptr);
-
-    if (!window) {
-        std::cerr << "Error creating window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (glfwRawMouseMotionSupported())
@@ -77,7 +54,7 @@ int main()
     load();
 
     camera.setPosition(glm::vec3{0.0, 0.0, -7.0});
-    //camera.set_rotation(glm::vec2{60.0, -120.0});
+    renderer.init();
 
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window))
@@ -86,11 +63,9 @@ int main()
         lastTime = glfwGetTime();
 
         input();
-
         update(static_cast<float>(dt));
 
         bgfx::touch(0);
-        bgfx::dbgTextClear();
         render();
         bgfx::frame();
     }
@@ -111,35 +86,31 @@ void input ()
 
 void render ()
 {
-    bgfx::dbgTextPrintf(0, 0, ((0x2 + 1) << 4) | 0xF, "Hello, world");
-    bgfx::dbgTextPrintf(0, 1, ((0x2) << 4) | 0xF, std::to_string(glfwGetTime()).c_str());
-
+    renderer.prepare();
     camera.prepare();
-    bgfx::setViewRect(0, 0, 0, WIDTH, HEIGHT);
 
-    glm::mat4 model = glm::translate(glm::mat4(1.0), glm::vec3(0, 0, 0));
-    bgfx::setTransform(reinterpret_cast<void *>(&model));
+    renderer.render(demoMesh);
+    renderer.render(demoMesh2);
 
-    bgfx::setVertexBuffer(0, demoMesh.getVBH());
-    bgfx::setIndexBuffer(demoMesh.getIBH());
-
-    bgfx::submit(0, mainShader.program);
+    renderer.present();
 }
 
 void update (float delta)
 {
+    auto camPos = camera.getPosition();
+
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.setPosition(camera.getPosition() + camera.getForward() * 10.0f * delta);
+        camPos += camera.getForward() * 10.0f * delta;
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.setPosition(camera.getPosition() - camera.getForward() * 10.0f * delta);
+        camPos -= camera.getForward() * 10.0f * delta;
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.setPosition(camera.getPosition() + camera.getRight() * 10.0f * delta);
+        camPos += camera.getRight() * 10.0f * delta;
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.setPosition(camera.getPosition() - camera.getRight() * 10.0f * delta);
+        camPos -= camera.getRight() * 10.0f * delta;
     if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        camera.setPosition(camera.getPosition() + camera.getUp() * 10.0f * delta);
+        camPos +=  camera.getUp() * 10.0f * delta;
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        camera.setPosition(camera.getPosition() - camera.getUp() * 10.0f * delta);
+        camPos -= camera.getUp() * 10.0f * delta;
 
     float oldXPos = (float)mouseX, oldYPos = (float)mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -148,6 +119,7 @@ void update (float delta)
     yDelta = (float)mouseY - oldYPos;
 
     camera.setRotation(camera.getRotation() + glm::vec2{0.1f * xDelta * delta, 0.1f * yDelta * delta});
+    camera.setPosition(camPos);
 }
 
 
@@ -179,5 +151,31 @@ void load ()
             6, 7, 3,
     };
 
-    mainShader.load(DEFAULT_SHADER);
+    demoMesh2.vertices = {
+            {-1.0f,  1.0f,  1.0f, 0xff000000 },
+            { 1.0f,  1.0f,  1.0f, 0xff0000ff },
+            {-1.0f, -1.0f,  1.0f, 0xff00ff00 },
+            { 1.0f, -1.0f,  1.0f, 0xff00ffff },
+            {-1.0f,  1.0f, -1.0f, 0xffff0000 },
+            { 1.0f,  1.0f, -1.0f, 0xffff00ff },
+            {-1.0f, -1.0f, -1.0f, 0xffffff00 },
+            { 1.0f, -1.0f, -1.0f, 0xffffffff },
+    };
+
+    demoMesh2.vertexIndices = {
+            0, 2, 1,
+            1, 2, 3,
+            4, 5, 6,
+            5, 7, 6,
+            0, 4, 2,
+            4, 6, 2,
+            1, 3, 5,
+            5, 3, 7,
+            0, 1, 4,
+            4, 1, 5,
+            2, 6, 3,
+            6, 7, 3,
+    };
+
+    demoMesh2.modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(5, 0, 0));
 }

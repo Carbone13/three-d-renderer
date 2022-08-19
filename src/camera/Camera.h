@@ -1,5 +1,6 @@
 #ifndef THREE_D_RENDERER_CAMERA_H
 #define THREE_D_RENDERER_CAMERA_H
+
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -7,7 +8,8 @@
 
 #include <bgfx/bgfx.h>
 
-class Camera {
+class Camera
+{
 private:
     glm::mat4 view;
     glm::mat4 proj;
@@ -15,10 +17,12 @@ private:
     glm::vec3 position;
     glm::vec2 rotation;
 
+    glm::vec3 oldPosition;
+    glm::vec2 oldRotation;
+
     glm::vec3 forward, right, up;
 
     void recalculate();
-
 public:
     // GETTERS
     [[nodiscard]] glm::vec3 getPosition() const { return position; }
@@ -32,6 +36,10 @@ public:
     void setRotation (glm::vec2 _rotation);
 
     void prepare ();
+    Camera ()
+    {
+        proj = glm::perspective(glm::pi<float>() * 0.5f, 16.0f / 9.0f, 0.1f, 100.0f);
+    }
 };
 
 #endif //THREE_D_RENDERER_CAMERA_H

@@ -1,5 +1,6 @@
 #ifndef THREE_D_RENDERER_VERTEX_H
 #define THREE_D_RENDERER_VERTEX_H
+
 #include <cstdint>
 #include "bgfx/bgfx.h"
 
@@ -19,7 +20,6 @@ struct Vertex
                           bgfx::AttribType::Uint8, true);
         vertexLayout->end();
     }
-
 };
 
 #endif //THREE_D_RENDERER_VERTEX_H
