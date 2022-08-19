@@ -139,7 +139,7 @@ addGroup("${ALL_SHADERS}")
 
 
 
-add_executable(three_d_renderer ${ALL_HEADER} ${ALL_SOURCE} ${ALL_SHADERS})
+add_executable(three_d_renderer WIN32 ${ALL_HEADER} ${ALL_SOURCE} ${ALL_SHADERS})
 
 target_link_directories(three_d_renderer PRIVATE "lib/bgfx/.build/win64_mingw-gcc/bin/")
 target_link_directories(three_d_renderer PRIVATE "lib/glfw/.build/src/")
