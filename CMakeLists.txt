@@ -38,12 +38,12 @@ macro(compileShaders SRCS)
             set(ARRAY_NAME "${ARRAY_NAME}_cs")
         endif()
 
-        list(APPEND GEN_SRC ${FILE}.h)
+        list(APPEND GEN_SRC ${FILE}.hpp)
         add_custom_command(
-                OUTPUT ${FILE}.h
+                OUTPUT ${FILE}.hpp
                 COMMAND ${PRJ_SHADERS_COMPILER}
                 -i lib/bgfx/src --type ${SHADER_TYPE} --platform ${PRJ_SHADERS_PLATFORM} ${SHADER_ARGS}
-                -f ${FILE} -o ${FILE}.h --bin2c ${ARRAY_NAME}
+                -f ${FILE} -o ${FILE}.hpp --bin2c ${ARRAY_NAME}
                 DEPENDS ${FILE} ${PRJ_SHADERS_COMPILER}
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         )

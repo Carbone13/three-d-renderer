@@ -1,5 +1,5 @@
-#ifndef THREE_D_RENDERER_CAMERA_H
-#define THREE_D_RENDERER_CAMERA_H
+#ifndef THREE_D_RENDERER_CAMERA_HPP
+#define THREE_D_RENDERER_CAMERA_HPP
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -42,4 +42,4 @@ public:
     }
 };
 
-#endif //THREE_D_RENDERER_CAMERA_H
+#endif //THREE_D_RENDERER_CAMERA_HPP

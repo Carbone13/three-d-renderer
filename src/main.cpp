@@ -1,4 +1,4 @@
-#include <main.h>
+#include <main.hpp>
 #include <iostream>
 
 #define GLFW_EXPOSE_NATIVE_WIN32
@@ -10,8 +10,8 @@
 
 #include "bgfx/bgfx.h"
 
-#include "camera/camera.h"
-#include "render/renderer/renderer.h"
+#include "camera/camera.hpp"
+#include "render/renderer/renderer.hpp"
 
 #define WIDTH 1600
 #define HEIGHT 900

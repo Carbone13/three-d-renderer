@@ -1,5 +1,5 @@
-#ifndef THREE_D_RENDERER_VERTEX_H
-#define THREE_D_RENDERER_VERTEX_H
+#ifndef THREE_D_RENDERER_VERTEX_HPP
+#define THREE_D_RENDERER_VERTEX_HPP
 
 #include <cstdint>
 #include "bgfx/bgfx.h"
@@ -22,4 +22,4 @@ struct Vertex
     }
 };
 
-#endif //THREE_D_RENDERER_VERTEX_H
+#endif //THREE_D_RENDERER_VERTEX_HPP

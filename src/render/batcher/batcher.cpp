@@ -1,5 +1,5 @@
 #include <map>
-#include "batcher.h"
+#include "batcher.hpp"
 
 static std::map<uint16_t, bgfx::ProgramHandle> SHADERS;
 
@@ -145,8 +145,8 @@ bool Batcher::canBatch(BatchCommand *a, BatchCommand *b)
 }
 
 /// SHADERS
-#include "shaders/default/default.fs.h"
-#include "shaders/default/default.vs.h"
+#include "shaders/default/default.fs.hpp"
+#include "shaders/default/default.vs.hpp"
 
 /// CONST
 constexpr int DEFAULT_SHADER = 0;

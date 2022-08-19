@@ -1,8 +1,8 @@
-#ifndef THREE_D_RENDERER_MESH_H
-#define THREE_D_RENDERER_MESH_H
+#ifndef THREE_D_RENDERER_MESH_HPP
+#define THREE_D_RENDERER_MESH_HPP
 
 #include <vector>
-#include "vertex.h"
+#include "vertex.hpp"
 #include "glm/glm.hpp"
 
 typedef std::vector<Vertex> VertexBuffer;
@@ -19,4 +19,4 @@ public:
     int shader;
 };
 
-#endif //THREE_D_RENDERER_MESH_H
+#endif //THREE_D_RENDERER_MESH_HPP

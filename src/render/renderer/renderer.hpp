@@ -1,8 +1,8 @@
-#ifndef THREE_D_RENDERER_RENDERER_H
-#define THREE_D_RENDERER_RENDERER_H
+#ifndef THREE_D_RENDERER_RENDERER_HPP
+#define THREE_D_RENDERER_RENDERER_HPP
 
-#include "../mesh.h"
-#include "render/batcher/batcher.h"
+#include "../mesh.hpp"
+#include "render/batcher/batcher.hpp"
 
 class Renderer
 {
@@ -18,4 +18,4 @@ private:
     bgfx::VertexLayout vertexLayout;
 };
 
-#endif //THREE_D_RENDERER_RENDERER_H
+#endif //THREE_D_RENDERER_RENDERER_HPP

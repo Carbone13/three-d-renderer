@@ -1,11 +1,11 @@
-#ifndef THREE_D_RENDERER_BATCHER_H
-#define THREE_D_RENDERER_BATCHER_H
+#ifndef THREE_D_RENDERER_BATCHER_HPP
+#define THREE_D_RENDERER_BATCHER_HPP
 
 #include <array>
 #include <queue>
 #include <map>
 #include <stdexcept>
-#include "../mesh.h"
+#include "../mesh.hpp"
 #include "bgfx/bgfx.h"
 
 template <class T, size_t size>
@@ -81,4 +81,4 @@ private:
 bgfx::createShader(bgfx::makeRef(NAME ## _vs, sizeof(NAME ## _vs))), \
 bgfx::createShader(bgfx::makeRef(NAME ## _fs, sizeof(NAME ## _fs))), true))
 
-#endif //THREE_D_RENDERER_BATCHER_H
+#endif //THREE_D_RENDERER_BATCHER_HPP
