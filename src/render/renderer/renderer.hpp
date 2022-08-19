@@ -11,7 +11,7 @@ public:
     void render (Mesh mesh);
     void present();
 
-    void prepare () { viewID = 0; }
+   // void prepare () { viewID = 0; }
 private:
     uint8_t viewID{};
     Batcher batcher{};

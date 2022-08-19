@@ -9,12 +9,13 @@ void Renderer::init() {
 
 void Renderer::render(Mesh mesh)
 {
-    batcher.queue(viewID, mesh, 0);
+    batcher.queue(0, mesh, viewID);
+    ++viewID;
 }
 
 void Renderer::present()
 {
     batcher.flush();
     // TODO why do we use that ?
-    ++viewID;
+    //++viewID;
 }

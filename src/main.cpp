@@ -86,7 +86,7 @@ void input ()
 
 void render ()
 {
-    renderer.prepare();
+    //renderer.prepare();
     camera.prepare();
 
     renderer.render(demoMesh);
